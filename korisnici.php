@@ -42,6 +42,88 @@
     </div>
 </div>
 
+<script>
+    let korisnici = [];
+    let trenutniId = 0;
+    $(document).ready(function () {
+
+        ucitajKorisnike();
+        $('#obrisi').click(function () {
+            obrisiKorisnika(trenutniId);
+        })
+        $('#forma').submit(function (e) {
+            e.preventDefault();
+
+            const ime = $("#ime").val();
+            const prezime = $("#prezime").val();
+            
+            $.post('./server/index.php', {
+                akcija: trenutniId === 0 ? 'kreirajKorisnika' : 'izmeniKorisnika',
+                ime,
+                prezime,
+               
+                id: trenutniId || undefined
+            }, function (res) {
+                res = JSON.parse(res);
+                if (!res.status) {
+                    alert(res.error);
+                }
+                popuniFormu(0);
+                ucitajKorisnike();
+            })
+        })
+        $("#vratiSe").click(function () {
+
+            popuniFormu(0);
+        })
+
+    })
+
+    function obrisiKorisnika(id) {
+        $.post('./server/index.php', { akcija: 'obrisiKorisnika', id }, function (res) {
+            res = JSON.parse(res);
+            if (!res.status) {
+                alert(res.error);
+            }
+            popuniFormu(0);
+            ucitajKorisnike();
+        })
+    }
+
+    function ucitajKorisnike() {
+        $.getJSON("./server/index.php", { akcija: 'vratiKorisnike' }, function (res) {
+            if (!res.status) {
+                alert(res.error);
+                return;
+            }
+            korisnici = res.data;
+            $('#korisnici').html('');
+            for (let korisnik of res.data) {
+                $('#korisnici').append(`
+                    <tr>
+                        <td>${korisnik.id}</td>
+                        <td>${korisnik.ime}</td>
+                        <td>${korisnik.prezime}</td>
+                       
+                        <td>
+                            <button onClick="popuniFormu(${korisnik.id})" class='btn btn-success width-100'>Detalji</button>
+                        </td>
+                    </tr>
+                `)
+            }
+        })
+    }
+    function popuniFormu(id) {
+        trenutniId = id;
+        const korisnik = korisnici.find(e => e.id == id);
+        $('#naslov').html(korisnik ? 'Izmeni korisnika' : 'Kreiraj korisnika');
+        $('#ime').val(korisnik?.ime || '');
+        $('#prezime').val(korisnik?.prezime || '');
+       
+        $("#obrisi").attr('hidden', korisnik === undefined);
+        $("#vratiSe").attr('hidden', korisnik === undefined);
+    }
+</script>
 
 <?php
     include 'footer.php';

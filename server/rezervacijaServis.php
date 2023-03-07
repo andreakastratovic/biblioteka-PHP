@@ -12,7 +12,6 @@ class RezervacijaServis{
     }
     public function kreiraj($knjigaId,$korisnikId){
 
-       
         $knjiga=$this->broker->izvrsiCitanje("select * from knjiga where id=".$knjigaId)[0];
         $korisnik=$this->broker->izvrsiCitanje("select * from korisnik where id=".$korisnikId)[0];
       

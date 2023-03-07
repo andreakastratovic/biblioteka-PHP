@@ -14,6 +14,7 @@
 
 
 <nav class="navbar navbar-expand-lg navbar-light sticky-top bg-light">
+    
         <a class="navbar-brand" href="index.php"><h1> Biblioteka </h1></a>
         
         <div class="navbar-collapse collapse">
